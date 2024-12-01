@@ -5,6 +5,40 @@ import codecs
 import csv
 from xml.etree.ElementTree import parse
 from pathlib import Path
+import PyPDF2
+
+def get_pdf_page_count(directory):
+    """
+    指定されたディレクトリ内の単一のPDFファイルのページ数を取得する関数
+
+    Args:
+        directory (str): PDFファイルが格納されているディレクトリのパス
+
+    Returns:
+        int: PDFのページ数 (PDFが見つからない場合は0)
+    """
+    # ディレクトリ内のファイルリストを取得
+    files = [f for f in os.listdir(directory) if f.lower().endswith('.pdf')]
+
+    # PDFファイルが1つでない場合は0を返す
+    if len(files) != 1:
+        print(f"エラー: ディレクトリ {directory} には1つのPDFファイルが必要です。現在のファイル数: {len(files)}")
+        return 0
+
+    # PDFファイルのフルパスを作成
+    pdf_path = os.path.join(directory, files[0])
+
+    try:
+        # PDFファイルを開く
+        with open(pdf_path, 'rb') as file:
+            pdf_reader = PyPDF2.PdfReader(file)
+            # ページ数を取得
+            page_count = len(pdf_reader.pages)
+            return page_count
+
+    except Exception as e:
+        print(f"PDFファイルの読み取り中にエラーが発生しました: {e}")
+        return 0
 
 def xml_to_csv(ipt, opt):
     p = Path(ipt)
@@ -54,6 +88,10 @@ def xml_to_csv(ipt, opt):
                 
                 csv_path = Path(opt) / f"{csv_name}.csv"
                 
+                # PDFページ数の取得（XMLと同じディレクトリを想定）
+                pdf_directory = xml_file.parent
+                page_count = get_pdf_page_count(pdf_directory)
+                
                 with open(csv_path, 'a', encoding='utf-8', newline='') as csv_file:
                     writer = csv.writer(csv_file)
 
@@ -69,6 +107,11 @@ def xml_to_csv(ipt, opt):
                         safe_get_text('.//pat:InventionTitle'),
                         safe_get_text('.//jppat:IPCClassification/pat:MainClassification'),
                         safe_get_text('.//jppat:ClaimTotalQuantitySet/pat:ClaimTotalQuantity'),
+                        
+                        # PDFページ数を追加
+                        page_count,
+                        
+                        # 以下、既存のコードを続ける
                         #FI ここはappendでスペース入れないとスペース入れてくれない
                         safe_get_text('.//jppat:UnexaminedPatentPublicationBibliographicData/jppat:NationalClassification', "      "),
                         #テーマコード
