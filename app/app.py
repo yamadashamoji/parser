@@ -3,7 +3,7 @@ from tkinter import filedialog, ttk
 import threading
 import os
 from unzip import extract_zip
-from convert import xml_to_csv
+from parser import xml_to_csv
 
 class App(tk.Tk):
     def __init__(self):

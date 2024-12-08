@@ -97,13 +97,13 @@ def xml_to_csv(ipt, opt):
 
                     # データ抽出（すべて相対パスに修正）
                     data = [
-                        publication_status,  # 既に取得済みの公報種別を使用
-                        publication_status,  # 既存のデータベースと帳尻合わせをするため
-                        publication_status,  # 既存のデータベースと帳尻合わせをするため
+                        "Z",  # 既存のデータベースと帳尻合わせをするため
+                        "Y",  # 既存のデータベースと帳尻合わせをするため
+                        "種別なし",  # 既存のデータベースと帳尻合わせをするため
                         safe_get_text('.//pat:PublicationNumber'),
-                        safe_get_text('.//com:PublicationDate'),
+                        safe_get_text('.//com:PublicationDate').replace("-", ""),
                         safe_get_text('.//com:ApplicationNumber/com:ApplicationNumberText'),
-                        safe_get_text('.//jppat:ApplicationIdentification/pat:FilingDate'),
+                        safe_get_text('.//jppat:ApplicationIdentification/pat:FilingDate').replace("-", ""),
                         safe_get_text('.//pat:InventionTitle'),
                         safe_get_text('.//jppat:IPCClassification/pat:MainClassification'),
                         safe_get_text('.//jppat:ClaimTotalQuantitySet/pat:ClaimTotalQuantity'),
